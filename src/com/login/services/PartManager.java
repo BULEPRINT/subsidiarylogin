@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * describtion:¡„º˛–≈œ¢π‹¿Ì
+ * describtion:ÈîôËØØÈõ∂‰ª∂‰ø°ÊÅØ
  * author: zgj
  * date: 2017/8/28
  */
@@ -24,25 +24,45 @@ public class PartManager extends HttpServlet{
             throws ServletException, IOException{
         response.setContentType("text/html;charset=utf-8");
         request.setCharacterEncoding("utf-8");
-        PrintWriter out = response.getWriter();
         String partname = request.getParameter("partname");
         String dislocationCount = request.getParameter("dislocationCount");
+        String studno = request.getParameter("studentno");
+        String examTime = request.getParameter("examTime");
+        String examTaskTime = request.getParameter("examTaskTime");
         JSONObject jsonObj = new JSONObject();
         String msg = "";
         String flag = "false";
         if(!VTools.StringIsNullOrSpace(partname)&&!VTools.StringIsNullOrSpace(dislocationCount)){
 
             DBUtil util = new DBUtil();
-            util.save("insert into PartInfo(partname,dislocationCount,inserttime) values(?,?,?) ",partname,dislocationCount,VTools.getSysDate("yyyy-mm-dd hh:mm:ss"));
-            util.close();
-            msg = "±£¥Ê≥…π¶";
-            flag = "true";
+            try {
+                util.save("insert into partinfo(partname,dislocationCount,inserttime,studentno,examTime,examTaskTime,examStates) values(?,?,?,?,?,?,?) ",partname,dislocationCount,VTools.getSysDate("yyyy-mm-dd hh:mm:ss"),studno,examTime,examTaskTime,1);
+                msg = "‰øùÂ≠òÊàêÂäü";
+                flag = "true";
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                msg = "‰øùÂ≠òÂ§±Ë¥•";
+            }
+
         }else{
-            msg = "¡„º˛–≈œ¢Œ™ø’£°";
+            msg = "Èõ∂‰ª∂‰ø°ÊÅØ‰∏∫Á©∫ÔºÅ";
         }
         jsonObj.put("flag",flag);
         jsonObj.put("msg",msg);
-        out.write(jsonObj.toString());
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=utf-8");
+        response.setHeader("Access-Control-Allow-Origin","*");
+        PrintWriter out = null;
+        try {
+            out = response.getWriter();
+            out.append(jsonObj.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+        }
     }
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

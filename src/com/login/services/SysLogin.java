@@ -1,7 +1,7 @@
 package com.login.services;
 
+import com.login.Common.UserCommon;
 import com.login.entity.SysUser;
-import com.login.util.DBUtil;
 import com.login.util.VTools;
 import net.sf.json.JSONObject;
 
@@ -11,86 +11,81 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * describtion:ÓÃ»§µÇÂ¼servlet
+ * describtion:ç”¨æˆ·ç™»é™†servlet
  * author: zgj
  * date: 2017/8/28
  */
 public class SysLogin extends HttpServlet{
 
     private static final long serialVersionUID = 1L;
-
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        this.doPost(request,response);
+    }
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=utf-8");
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
-        PrintWriter out = response.getWriter();
         String msg = "";
         String flag = "false";
         JSONObject jsonObj = new JSONObject();
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String studNo = request.getParameter("studno");
+        UserCommon userCommon = new UserCommon();
         if(!VTools.StringIsNullOrSpace(username)){
 
             if(!VTools.StringIsNullOrSpace(password)){
 
 
-                    List<SysUser> listUser = getUserByName(username);
-                    if(listUser.size()>0){
-                        if(password.equals(listUser.get(0).getPassword())){
+                List<SysUser> listUser = userCommon.getUserByName(username);
+                if(listUser.size()>0){
+                    if(password.equals(listUser.get(0).getPassword())){
                             flag = "true";
-                            msg = "µÇÂ½³É¹¦";
-                        }else{
-                            msg = "ÃÜÂë´íÎó£¡";
-                        }
-                    }else {
-                        msg = "ÓÃ»§²»´æÔÚ£¡";
+                            msg = "ç™»é™†æˆåŠŸ";
+                            jsonObj.put("examStates",userCommon.getExamStateByStudentNo(username));
+                    }else{
+                        msg = "å¯†ç é”™è¯¯ï¼";
                     }
+                }else {
+                    msg = "ç”¨æˆ·ä¸å­˜åœ¨ï¼";
+                }
 
             }else{
-                msg = "ÃÜÂë²»ÄÜÎª¿Õ£¡";
+                msg = "å¯†ç ä¸èƒ½ä¸ºç©ºï¼";
             }
         }else{
-            msg = "ÓÃ»§Ãû²»ÄÜÎª¿Õ£¡";
+            msg = "ç”¨æˆ·åä¸èƒ½ä¸ºç©ºï¼";
         }
+        /*if("true".equals(flag)&!VTools.StringIsNullOrSpace(username)){
+            //æ›´æ–°ç™»å½•çŠ¶æ€
+            userCommon.updateUserEnable(username,"1");
+        }*/
         jsonObj.put("flag",flag);
         jsonObj.put("msg",msg);
-        out.write(jsonObj.toString());
-    }
-
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        this.doGet(request, response);
-    }
-    private List<SysUser> getUserByName(String username) {
-
-        DBUtil util = new DBUtil();
-        List<SysUser> listU = new ArrayList<SysUser>();
-        SysUser user = null;
-        ResultSet rs = util.query("select * from sys_user where username=? ",username);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=utf-8");
+        response.setHeader("Access-Control-Allow-Origin","*");
+        PrintWriter out = null;
         try {
-            while (rs.next()){
-
-                user = new SysUser();
-                user.setUsername(rs.getString("username")+"");
-                user.setPassword(rs.getString("password")+"");
-                user.setCreatetime(rs.getString("create_time"));
-                user.setEnable(rs.getString("enable")+"");
-                listU.add(user);
-            }
-        }catch (SQLException e){
+            out = response.getWriter();
+            out.append(jsonObj.toString());
+        } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            util.close();
+        } finally {
+            if (out != null) {
+                out.close();
+            }
         }
-
-
-        return listU;
     }
+
+
 }

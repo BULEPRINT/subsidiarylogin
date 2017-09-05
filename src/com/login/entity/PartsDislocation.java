@@ -11,6 +11,43 @@ public class PartsDislocation {
     private int dislocationCount;
     private String inserttime;
 
+    private String studentno;
+    private String examTaskTime;
+    private String examTime;
+    private String stduname;
+
+    public String getStudentno() {
+        return studentno;
+    }
+
+    public void setStudentno(String studentno) {
+        this.studentno = studentno;
+    }
+
+    public String getExamTaskTime() {
+        return examTaskTime;
+    }
+
+    public void setExamTaskTime(String examTaskTime) {
+        this.examTaskTime = examTaskTime;
+    }
+
+    public String getExamTime() {
+        return examTime;
+    }
+
+    public void setExamTime(String examTime) {
+        this.examTime = examTime;
+    }
+
+    public String getStduname() {
+        return stduname;
+    }
+
+    public void setStduname(String stduname) {
+        this.stduname = stduname;
+    }
+
     public String getId() {
         return id;
     }
