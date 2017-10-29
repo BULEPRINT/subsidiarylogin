@@ -1,5 +1,6 @@
 package com.login.services;
 
+import com.login.Common.UserCommon;
 import com.login.util.DBUtil;
 import com.login.util.VTools;
 import net.sf.json.JSONObject;
@@ -32,7 +33,8 @@ public class PartManager extends HttpServlet{
         JSONObject jsonObj = new JSONObject();
         String msg = "";
         String flag = "false";
-        if(!VTools.StringIsNullOrSpace(partname)&&!VTools.StringIsNullOrSpace(dislocationCount)){
+        UserCommon userCommon = new UserCommon();
+        if(userCommon.getUserByName(studno).size()>0){
 
             DBUtil util = new DBUtil();
             try {
@@ -45,10 +47,10 @@ public class PartManager extends HttpServlet{
             }
 
         }else{
-            msg = "零件信息为空！";
+            msg = "系统不存在该学号用户！";
         }
         jsonObj.put("flag",flag);
-        jsonObj.put("msg",msg);
+     jsonObj.put("msg",msg);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         response.setHeader("Access-Control-Allow-Origin","*");
